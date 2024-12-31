@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meals_app/Models/meal.dart';
+import 'package:meals_app/Widgets/meal_item_trait.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class MealItems extends StatelessWidget {
@@ -7,16 +8,26 @@ class MealItems extends StatelessWidget {
 
   final Meal meal;
 
+  String get complexityText {
+    return meal.complexity.name[0].toUpperCase() +
+        meal.complexity.name.substring(1);
+  }
+
+  String get affordabilityText {
+    return meal.affordability.name[0].toUpperCase() +
+        meal.affordability.name.substring(1);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.symmetric(horizontal: 20,vertical: 30),
+      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
       clipBehavior: Clip.hardEdge,
       elevation: 8,
-      child: InkWell( 
+      child: InkWell(
         child: Stack(
           children: [
             FadeInImage(
@@ -49,7 +60,27 @@ class MealItems extends StatelessWidget {
                       height: 10,
                     ),
                     Row(
-                      children: [],
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        MealItemTrait(
+                          icon: Icons.schedule,
+                          lable: '${meal.duration} mins',
+                        ),
+                        const SizedBox(
+                          width: 15,
+                        ),
+                        MealItemTrait(
+                          icon: Icons.work,
+                          lable: complexityText,
+                        ),
+                        const SizedBox(
+                          width: 15,
+                        ),
+                        MealItemTrait(
+                          icon: Icons.currency_rupee,
+                          lable: affordabilityText,
+                        )
+                      ],
                     )
                   ],
                 ),
