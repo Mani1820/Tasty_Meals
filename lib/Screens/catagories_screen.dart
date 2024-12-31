@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:meals_app/Data/dummy_data.dart';
+import 'package:meals_app/Models/categories.dart';
 import 'package:meals_app/Screens/meals_screen.dart';
 import 'package:meals_app/Widgets/category_grid_items.dart';
 
 class CategoriesScreen extends StatelessWidget {
   const CategoriesScreen({super.key});
 
-  void _selectCategory(BuildContext context) {
+  void _selectCategory(BuildContext context, Categories categories) {
+    final filteredMeals = dummyMeals
+        .where((meals) => meals.categories.contains(categories.id))
+        .toList();
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (ctx) => MealsScreen(title:dummyMeals.toString(), meal: []),
+        builder: (ctx) =>
+            MealsScreen(title: categories.title, meals: filteredMeals),
       ),
     );
   }
@@ -33,7 +38,7 @@ class CategoriesScreen extends StatelessWidget {
             CategoriesGridItems(
                 categories: categories,
                 onSelectCategory: () {
-                  _selectCategory(context);
+                  _selectCategory(context, categories);
                 }),
         ],
       ),
