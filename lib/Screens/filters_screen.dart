@@ -1,19 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:meals_app/Screens/tabs_screen.dart';
-import 'package:meals_app/Widgets/drawer.dart';
+
+enum Filter {
+  glutenFree,
+  lactoseFree,
+  vegan,
+  vegetarian,
+}
 
 class FiltersScreen extends StatefulWidget {
-  const FiltersScreen({super.key});
+  final Map<Filter, bool> currentFilters;
+
+  const FiltersScreen({super.key, required this.currentFilters});
 
   @override
   State<FiltersScreen> createState() => _FiltersScreenState();
 }
 
 class _FiltersScreenState extends State<FiltersScreen> {
-  var isGlutenFree = false;
-  var isLactoseFree = false;
-  var isVegan = false;
-  var isVegetarian = false;
+  late bool isGlutenFree;
+  late bool isLactoseFree;
+  late bool isVegan;
+  late bool isVegetarian;
+
+  @override
+  void initState() {
+    super.initState();
+    isGlutenFree = widget.currentFilters[Filter.glutenFree]!;
+    isLactoseFree = widget.currentFilters[Filter.lactoseFree]!;
+    isVegan = widget.currentFilters[Filter.vegan]!;
+    isVegetarian = widget.currentFilters[Filter.vegetarian]!;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,20 +42,21 @@ class _FiltersScreenState extends State<FiltersScreen> {
               .titleLarge!
               .copyWith(color: Theme.of(context).colorScheme.onSurface),
         ),
-      ),
-      drawer: MainDrawer(
-        onSelectScreen: (identifiers) {
-          if (identifiers == 'Meals') {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (ctx) => Tabsscreen(),
-              ),
-            );
-          }
-        },
+        actions: [
+          IconButton(
+            icon: Icon(Icons.save),
+            onPressed: () {
+              Navigator.of(context).pop({
+                Filter.glutenFree: isGlutenFree,
+                Filter.lactoseFree: isLactoseFree,
+                Filter.vegetarian: isVegetarian,
+                Filter.vegan: isVegan,
+              });
+            },
+          ),
+        ],
       ),
       body: Column(
-        spacing: 18,
         children: [
           SwitchListTile(
             value: isGlutenFree,
@@ -49,14 +66,14 @@ class _FiltersScreenState extends State<FiltersScreen> {
               });
             },
             title: Text(
-              'Glutten Free',
+              'Gluten Free',
               style: Theme.of(context)
                   .textTheme
                   .titleLarge!
                   .copyWith(color: Theme.of(context).colorScheme.onSurface),
             ),
             subtitle: Text(
-              'Only include glutten free meals',
+              'Only include gluten free meals',
               style: Theme.of(context)
                   .textTheme
                   .labelMedium!
@@ -104,7 +121,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
                   .copyWith(color: Theme.of(context).colorScheme.onSurface),
             ),
             subtitle: Text(
-              'Only include Vegan meals',
+              'Only include vegan meals',
               style: Theme.of(context)
                   .textTheme
                   .labelMedium!
@@ -121,14 +138,14 @@ class _FiltersScreenState extends State<FiltersScreen> {
               });
             },
             title: Text(
-              'Vegitarian',
+              'Vegetarian',
               style: Theme.of(context)
                   .textTheme
                   .titleLarge!
                   .copyWith(color: Theme.of(context).colorScheme.onSurface),
             ),
             subtitle: Text(
-              'Only include Vegitarian meals',
+              'Only include vegetarian meals',
               style: Theme.of(context)
                   .textTheme
                   .labelMedium!
