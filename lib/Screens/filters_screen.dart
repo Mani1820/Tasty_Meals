@@ -1,22 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:meals_app/provider/filters_provider.dart';
 
-enum Filter {
-  glutenFree,
-  lactoseFree,
-  vegan,
-  vegetarian,
-}
-
-class FiltersScreen extends StatefulWidget {
-  final Map<Filter, bool> currentFilters;
-
-  const FiltersScreen({super.key, required this.currentFilters});
+class FiltersScreen extends ConsumerStatefulWidget {
+  const FiltersScreen({super.key});
 
   @override
-  State<FiltersScreen> createState() => _FiltersScreenState();
+  ConsumerState<FiltersScreen> createState() => _FiltersScreenState();
 }
 
-class _FiltersScreenState extends State<FiltersScreen> {
+class _FiltersScreenState extends ConsumerState<FiltersScreen> {
   late bool isGlutenFree;
   late bool isLactoseFree;
   late bool isVegan;
@@ -25,134 +18,65 @@ class _FiltersScreenState extends State<FiltersScreen> {
   @override
   void initState() {
     super.initState();
-    isGlutenFree = widget.currentFilters[Filter.glutenFree]!;
-    isLactoseFree = widget.currentFilters[Filter.lactoseFree]!;
-    isVegan = widget.currentFilters[Filter.vegan]!;
-    isVegetarian = widget.currentFilters[Filter.vegetarian]!;
+    final activeFilters = ref.read(filterProviders);
+    isGlutenFree = activeFilters[Filter.glutenFree]!;
+    isLactoseFree = activeFilters[Filter.lactoseFree]!;
+    isVegan = activeFilters[Filter.vegan]!;
+    isVegetarian = activeFilters[Filter.vegetarian]!;
+  }
+
+  void _setFilter(Filter filter, bool value) {
+    setState(() {
+      switch (filter) {
+        case Filter.glutenFree:
+          isGlutenFree = value;
+          break;
+        case Filter.lactoseFree:
+          isLactoseFree = value;
+          break;
+        case Filter.vegan:
+          isVegan = value;
+          break;
+        case Filter.vegetarian:
+          isVegetarian = value;
+          break;
+      }
+    });
+    ref.read(filterProviders.notifier).setFilter({
+      Filter.glutenFree: isGlutenFree,
+      Filter.lactoseFree: isLactoseFree,
+      Filter.vegan: isVegan,
+      Filter.vegetarian: isVegetarian,
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Filters',
-          style: Theme.of(context)
-              .textTheme
-              .titleLarge!
-              .copyWith(color: Theme.of(context).colorScheme.onSurface),
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.save),
-            onPressed: () {
-              Navigator.of(context).pop({
-                Filter.glutenFree: isGlutenFree,
-                Filter.lactoseFree: isLactoseFree,
-                Filter.vegetarian: isVegetarian,
-                Filter.vegan: isVegan,
-              });
-            },
-          ),
-        ],
+        title: const Text('Your Filters'),
       ),
       body: Column(
         children: [
           SwitchListTile(
+            title: const Text('Gluten-free'),
             value: isGlutenFree,
-            onChanged: (onChecked) {
-              setState(() {
-                isGlutenFree = onChecked;
-              });
-            },
-            title: Text(
-              'Gluten Free',
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge!
-                  .copyWith(color: Theme.of(context).colorScheme.onSurface),
-            ),
-            subtitle: Text(
-              'Only include gluten free meals',
-              style: Theme.of(context)
-                  .textTheme
-                  .labelMedium!
-                  .copyWith(color: Theme.of(context).colorScheme.onSurface),
-            ),
-            activeColor: Theme.of(context).colorScheme.primary,
-            contentPadding: EdgeInsets.only(left: 36, right: 22),
+            onChanged: (value) => _setFilter(Filter.glutenFree, value),
           ),
           SwitchListTile(
+            title: const Text('Lactose-free'),
             value: isLactoseFree,
-            onChanged: (onChecked) {
-              setState(() {
-                isLactoseFree = onChecked;
-              });
-            },
-            title: Text(
-              'Lactose Free',
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge!
-                  .copyWith(color: Theme.of(context).colorScheme.onSurface),
-            ),
-            subtitle: Text(
-              'Only include lactose free meals',
-              style: Theme.of(context)
-                  .textTheme
-                  .labelMedium!
-                  .copyWith(color: Theme.of(context).colorScheme.onSurface),
-            ),
-            activeColor: Theme.of(context).colorScheme.primary,
-            contentPadding: EdgeInsets.only(left: 36, right: 22),
+            onChanged: (value) => _setFilter(Filter.lactoseFree, value),
           ),
           SwitchListTile(
+            title: const Text('Vegan'),
             value: isVegan,
-            onChanged: (onChecked) {
-              setState(() {
-                isVegan = onChecked;
-              });
-            },
-            title: Text(
-              'Vegan',
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge!
-                  .copyWith(color: Theme.of(context).colorScheme.onSurface),
-            ),
-            subtitle: Text(
-              'Only include vegan meals',
-              style: Theme.of(context)
-                  .textTheme
-                  .labelMedium!
-                  .copyWith(color: Theme.of(context).colorScheme.onSurface),
-            ),
-            activeColor: Theme.of(context).colorScheme.primary,
-            contentPadding: EdgeInsets.only(left: 36, right: 22),
+            onChanged: (value) => _setFilter(Filter.vegan, value),
           ),
           SwitchListTile(
+            title: const Text('Vegetarian'),
             value: isVegetarian,
-            onChanged: (onChecked) {
-              setState(() {
-                isVegetarian = onChecked;
-              });
-            },
-            title: Text(
-              'Vegetarian',
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge!
-                  .copyWith(color: Theme.of(context).colorScheme.onSurface),
-            ),
-            subtitle: Text(
-              'Only include vegetarian meals',
-              style: Theme.of(context)
-                  .textTheme
-                  .labelMedium!
-                  .copyWith(color: Theme.of(context).colorScheme.onSurface),
-            ),
-            activeColor: Theme.of(context).colorScheme.primary,
-            contentPadding: EdgeInsets.only(left: 36, right: 22),
+            onChanged: (value) => _setFilter(Filter.vegetarian, value),
           ),
         ],
       ),
