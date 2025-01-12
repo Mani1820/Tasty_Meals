@@ -34,7 +34,16 @@ class MealDetailScreen extends ConsumerWidget {
                 ),
               );
             },
-            icon: Icon(isAdded ? Icons.star : Icons.star_border),
+            icon: AnimatedSwitcher(
+              duration: Duration(milliseconds: 300),
+              transitionBuilder: (child, animation) {
+                return RotationTransition(turns: animation, child: child);
+              },
+              child: Icon(
+                isAdded ? Icons.star : Icons.star_border,
+                key: ValueKey(isAdded),
+              ),
+            ),
           ),
         ],
       ),
@@ -43,11 +52,14 @@ class MealDetailScreen extends ConsumerWidget {
           children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Image(
-                image: NetworkImage(meal.imageUrl),
-                fit: BoxFit.cover,
-                width: double.infinity,
-                height: 300,
+              child: Hero(
+                tag: meal.id,
+                child: Image(
+                  image: NetworkImage(meal.imageUrl),
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: 300,
+                ),
               ),
             ),
             Text(
